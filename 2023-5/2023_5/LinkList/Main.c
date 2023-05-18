@@ -98,11 +98,57 @@ void TestSingleList04()
 	SingleListDestroy(&pList);
 }
 
+void TestSingleList05()
+{
+	//给你一个链表的头节点heaed和一个整数val，请你删除链表中所有满足Node.val == val 的节点，并返回新的头节点
+	//输入:head = [1,2,6,3,4,5,6],val = 6
+	
+	SingleListDataType arr[6] = { 6,6,6,6,6,6 };
+	int i = 0;
+	SLNode* pList = NULL;
+	
+	for (i = 0; i < 6; i++)
+	{
+		SingleListPushBack(&pList, arr[i]);
+	}
+	SingleListPrint(pList);
+
+	pList = SingleListRemoveElments(pList, 6);
+
+	SingleListPrint(pList);
+}
+
+void TestSingleList06()
+{
+	SLNode* pList = NULL;
+	SLNode* pInsDataList = NULL;
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		SingleListPushBack(&pList, i + 1);
+	}
+	SingleListPrint(pList);
+	SingleListInsertAfter(pList, 100);
+	pInsDataList = pList;
+	while (pInsDataList && pInsDataList->next)
+	{
+		pInsDataList = pInsDataList->next;
+	}
+	SingleListInsertAfter(pInsDataList, 200);
+	SingleListPrint(pList);
+	SingleListEraseAfter(pList);
+	SingleListEraseAfter(pInsDataList);
+	SingleListPrint(pList);
+
+}
+
 int main()
 {
 	//TestSingleList01();
 	//TestSingleList02();
 	//TestSingleList03();
-	TestSingleList04();
+	//TestSingleList04();
+	//TestSingleList05();
+	TestSingleList06();
 	return 0;
 }

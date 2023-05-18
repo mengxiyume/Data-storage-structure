@@ -52,7 +52,7 @@ void SingleListDestroy(SLNode** ppList)
 
 	assert(ppList);
 
-	SLNode* current = *ppList, * last = current;
+	SLNode* current = *ppList, * previous = current;
 
 	//链表无节点时返回
 	if (!current)
@@ -61,15 +61,14 @@ void SingleListDestroy(SLNode** ppList)
 	//链表有下一个节点时last节点等于当前节点，当前节点变更为下一个节点，释放last节点
 	while(current->next)
 	{
-		last = current;
+		previous = current;
 		current = current->next;
-		free(last);
-		last = NULL;
+		free(previous);
+		previous = NULL;
 	}
 	//释放尾部节点
 	free(current);
 	*ppList = NULL;
-
 }
 
 #pragma region Push
@@ -195,6 +194,25 @@ void SingleListInsert(SLNode** ppList, int position, SingleListDataType data)
 		*ppList = tmpNode;
 
 }
+
+void SingleListInsertAfter(SLNode* position, SingleListDataType data)
+{
+	//检查pos有效性
+	//创建节点并链接下一个节点
+	//链接pos节点与new节点
+
+	assert(position);
+
+	SLNode* newNode = NULL;
+	if (!(newNode = (SLNode*)malloc(sizeof(SLNode))))
+	{
+		perror("");
+		return;
+	}
+	newNode->data = data;
+	newNode->next = position->next;
+	position->next = newNode;
+}
 #pragma endregion
 
 #pragma region Pop
@@ -300,5 +318,62 @@ void SingleListErase(SLNode** ppList, int position)
 		*ppList = current->next;
 	}
 	free(current);
+}
+
+void SingleListEraseAfter(SLNode* position)
+{
+	//检测pos有效性
+	//检测需删除节点有效性
+	//链接两侧节点
+	//删除节点
+	assert(position);
+
+	SLNode* eraseNode = position->next;
+	if (!eraseNode)
+	{
+		printf("Erase Node is NULL\n");
+		return;
+	}
+	position->next = eraseNode->next;
+	free(eraseNode);
+	eraseNode = NULL;
+}
+
+SLNode* SingleListRemoveElments(SLNode* head, SingleListDataType val)
+{
+	//检查head有效性
+	//逐一对比val与head->data
+	//相同则删除节点并链接上下节点
+
+	if (!head)
+		return (SLNode*)NULL;
+
+	SLNode* current = head, * pervious = NULL;
+	SLNode* ret = head;
+
+	while (current)
+	{
+		if (current->data == val)
+		{
+			SLNode* tmpD = current;
+			if (pervious)
+				//非头节点链接
+				pervious->next = current->next;
+			else
+				//头节点链接
+				ret = current->next;
+			//指针迭代0，释放原指针位置的空间
+			current = current->next;
+			free(tmpD);
+		}
+		else
+		{
+			//指针迭代
+			pervious = current;
+			current = current->next;
+		}
+	}
+
+	return ret;
 }
 #pragma endregion

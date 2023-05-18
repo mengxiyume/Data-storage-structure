@@ -20,10 +20,13 @@ void SingleListDestroy(SLNode** ppList);
 void SingleListPushBack(SLNode** ppList, SingleListDataType data);
 void SingleListPushFront(SLNode** ppList, SingleListDataType data);
 void SingleListInsert(SLNode** ppList, int position, SingleListDataType data);
+void SingleListInsertAfter(SLNode* position, SingleListDataType data);
 #pragma endregion
 
 #pragma region Pop
 void SingleListPopBack(SLNode** ppList);
 void SingleListPopFront(SLNode** ppList);
 void SingleListErase(SLNode** ppList, int position);
+void SingleListEraseAfter(SLNode* position);
+SLNode* SingleListRemoveElments(SLNode* head, SingleListDataType val);
 #pragma endregion
