@@ -13,8 +13,17 @@ typedef struct SingleListNode {
 }SLNode;
 
 void SingleListPrint(const SLNode* pList);
+void SingleListPrintOneNode(const SLNode* pNode);
 int SingleListFind(const SLNode* pList, SingleListDataType src);
 void SingleListDestroy(SLNode** ppList);
+SLNode* SingleListReverseList(SLNode* pList);
+SLNode* SingleListMiddleNode(const SLNode* pList);
+SLNode* SingleListFindKthToTail(SLNode* pList, size_t k);
+SLNode* SingleListMergeTowList(SLNode* pL1, SLNode* pL2);
+SLNode* SingleListFindTail(SLNode* pList);
+SLNode* SingleListPartition(SLNode* pList, int x);
+unsigned char SingleListCheckPalindrom(SLNode* pList);
+SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB);
 
 #pragma region Push
 void SingleListPushBack(SLNode** ppList, SingleListDataType data);

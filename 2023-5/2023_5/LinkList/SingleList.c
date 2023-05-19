@@ -19,6 +19,14 @@ void SingleListPrint(const SLNode* pList)
 	printf(" NULL\n");
 }
 
+void SingleListPrintOneNode(const SLNode* pNode)
+{
+	if (pNode)
+		printf("%d\n", pNode->data);
+	else
+		printf("\nThe Node is Not have\n");
+}
+
 int SingleListFind(const SLNode* pList, SingleListDataType src)
 {
 	//检测链表有效性
@@ -69,6 +77,340 @@ void SingleListDestroy(SLNode** ppList)
 	//释放尾部节点
 	free(current);
 	*ppList = NULL;
+}
+
+SLNode* SingleListReverseList(SLNode* pList)
+{
+	//检查链表有效性
+	//从头遍历,反向链接
+	SLNode* current = pList, * previous = NULL;
+	SLNode* ret = NULL;
+
+	//无链表时返回NULL
+	//链表只有一个节点时只将previous设置为该节点 
+
+	while (current)
+	{
+		//获取当前位
+		SLNode* tmpNode = current;
+		//当前位迭代
+		current = current->next;
+		//当前位(落后)的下一位指向上一位(落后) | 翻转
+		tmpNode->next = previous;
+		//上一位(落后)迭代
+		previous = tmpNode;
+	}
+	//最后一个previous则是原链表尾，也是新的链表头
+	ret = previous;
+	return ret;
+}
+
+SLNode* SingleListMiddleNode(const SLNode* pList)
+{
+	//返回中间节点，如有两个中间节点，则返回第二个中间节点
+
+	//检测链表有效性
+	//使用快慢指针，速度为2:1 | fast:slow
+
+	assert(pList);
+
+	SLNode* pSlow = pList, *pFast = pList;
+
+	//while (pFast)
+	//{
+	//	pFast = pFast->next;
+	//	if (!pFast)
+	//		break;
+	//	pFast = pFast->next;
+	//	pSlow = pSlow->next;
+	//}
+
+	while (pFast && pFast->next)
+	{
+		pFast = pFast->next->next;
+		pSlow = pSlow->next;
+	}
+
+	return pSlow;
+}
+
+SLNode* SingleListFindKthToTail(SLNode* pList, size_t k)
+{
+	//检测链表有效性
+	//快慢指针，fast领先slow K 步
+	//找到返回地址，找不到返回NULL(K不合法)
+
+	if (!(pList && k))
+	{
+		return NULL;
+	}
+
+	SLNode* pFast = pList, * pSlow = pList;
+
+	while (pFast)
+	{
+		if (k > 0)
+			k--;
+		else
+			pSlow = pSlow->next;
+		pFast = pFast->next;
+	}
+	if (k > 0)
+		return NULL;
+	return pSlow;
+}
+
+SLNode* SingleListMergeTowList(SLNode* pL1, SLNode* pL2)
+{
+	//合并两个有序链表
+	//升序
+
+#define SENTINEL
+
+#undef SNETINEL
+
+#ifdef SENTINEL
+	//带哨兵位
+	//检测链表有效性
+	//循环对比两个链表中元素并迭代
+	//链接尾部链表
+	//返回哨兵看守的链表
+
+	//只有一个链表有效时返回该链表，无链表时返回NULL
+	SLNode sentinel = { 0 };
+	SLNode* tail = &sentinel;
+
+	if (!pL1)
+		return pL2;
+	if (!pL2)
+		return pL1;
+
+	while (pL1 && pL2)
+	{
+		SLNode* tmpNode = NULL;
+
+		//谁小谁迭代
+		if (pL1->data < pL2->data)
+		{
+			tmpNode = pL1;
+			pL1 = pL1->next;
+		}
+		else
+		{
+			tmpNode = pL2;
+			pL2 = pL2->next;
+		}
+		tail->next = tmpNode;
+		tail = tail->next;
+	}
+	//链接尾部多余的链表
+	if (pL1)
+		tail->next = pL1;
+	else
+		tail->next = pL2;
+
+	return sentinel.next;
+#else
+	//不带哨兵位
+	//检测链表有效性
+	//循环对比两个链表的有效部分
+	//链接尾部剩余链表
+
+	SLNode* newHead = NULL, * tail = NULL;
+
+	//只有一个链表有效时返回该链表，无链表时返回NULL
+	if (!pL1)
+		return pL2;
+	if (!pL2)
+		return pL1;
+
+	while (pL1 && pL2)
+	{
+		SLNode* tmpNode = NULL;
+		if (pL1->data < pL2->data)
+		{
+			tmpNode = pL1;
+			pL1 = pL1->next;
+		}
+		else
+		{
+			tmpNode = pL2;
+			pL2 = pL2->next;
+		}
+		//第一次判断时创建新表
+		if (!newHead)
+			newHead = tail = tmpNode;
+		else
+			tail->next = tmpNode;
+		tail = tmpNode;
+	}
+	//尾部残余链接
+	if (pL1)
+		tail->next = pL1;
+	else if (pL2)
+		tail->next = pL2;
+	return newHead;
+#endif
+}
+
+SLNode* SingleListPartition(SLNode* pList, int x)
+{
+	//将链表中小于X的值放在前，大于等于X的值放在后，并返回新的链表头
+	//要求原相对顺序不变
+	
+	//检测链表有效性
+	//创建两个带哨兵位的链表
+	//用循环遍历链表
+	//data小于X的节点放在sentinel1里，大于等于X的节点放在sentinel2里
+	//循环结束链接sen1与sen2，sen2的末尾置空，返回sen1看守的节点
+
+	SLNode* sen1Head, * sen1Tail, * sen2Head, * sen2Tail;
+	SLNode* current = pList;
+	SLNode sentinel1 = { 0 }, sentinel2 = { 0 };
+
+	sen1Head = sen1Tail = &sentinel1;
+	sen2Head = sen2Tail = &sentinel2;
+
+	while (current)
+	{
+		//节点放置
+		if (current->data < x)
+		{
+			sen1Tail->next = current;
+			sen1Tail = current;
+		}
+		else
+		{
+			sen2Tail->next = current;
+			sen2Tail = current;
+		}
+
+		//current迭代
+		current = current->next;
+	}
+
+	//结尾处理
+	//链接1的尾节点与2看守的头节点,2的尾节点置空
+	sen1Tail->next = sen2Head->next;
+	sen2Tail->next = NULL;
+	
+	return sen1Head->next;
+}
+
+unsigned char SingleListCheckPalindrom(SLNode* pList)
+{
+	//检查pList是否回文结构，返回真值，时间复杂度O(N),空间复杂的O(1)
+
+	//检测链表有效性
+	//拿到中间节点，从中间节点开始倒置
+	//逐一对比是否相同
+	//重链接链表并返回结果
+
+	assert(pList);
+
+	unsigned char ret = 1;
+	SLNode* pListBack = SingleListMiddleNode(pList);
+	SLNode* currentFront = pList, * currentBack = pListBack;
+
+	pListBack = SingleListReverseList(pListBack);
+
+	while (currentBack)
+	{
+		if (currentFront->data != currentBack->data)
+			//有不同时置为0，离开循环时重链接链表，返回结果
+			ret = 0;
+		currentFront = currentFront->next;
+		currentBack = currentBack->next;
+	}
+	SingleListReverseList(pListBack);
+	return ret;
+}
+
+SLNode* SingleListFindTail(SLNode* pList)
+{
+	assert(pList);
+
+	while (pList->next)
+	{
+		pList = pList->next;
+	}
+	return pList;
+}
+
+SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB)
+{
+
+	//判断两个链表是否相交，如相交则返回相交点的地址，否则返回NULL
+
+	//判断链表有效性
+	//找尾并计算出两链表相差距离
+	//如尾地址不同则无交点
+	//如尾相同则有交点
+	//长的链表先迭代，再同时迭代
+	//next相同时则找到交点
+
+	if (!(headA && headB))
+		return NULL;
+
+	char dir = '\0';
+	size_t gap = 0;
+
+	SLNode* tailA = headA, * tailB = headB;
+	SLNode* longList = NULL, * shortList = NULL;
+	SLNode* pListTailA = headA, * pListTailB = headB;
+
+	while (tailA || tailB)
+	{
+		//其中一个走到头开始计算差距，直到两个都走到头结束
+		if (!(tailA && tailB))
+			gap++;
+
+		if (tailA)
+		{
+			if (tailA->next)
+				pListTailA = tailA;
+			tailA = tailA->next;
+			dir = 'A';
+		}
+		if (tailB)
+		{
+			if (tailB->next)
+				pListTailB = tailB;
+			tailB = tailB->next;
+			dir = 'B';
+		}
+	}
+	//无交尾则无节点相交
+	if (pListTailA != pListTailB)
+		return NULL;
+
+	//同样长度时默认B长
+	switch (dir)
+	{
+	case 'A':
+		longList = headA;
+		shortList = headB;
+		break;
+	case 'B':
+		longList = headB;
+		shortList = headA;
+		break;
+	}
+
+	//统一链表长度
+	while (gap--)
+	{
+		longList = longList->next;
+	}
+
+	//同步迭代，直到相同
+	while (longList)
+	{
+		if (longList->next == shortList->next)
+			return longList->next;
+		longList = longList->next;
+		shortList = shortList->next;
+	}
 }
 
 #pragma region Push

@@ -116,6 +116,7 @@ void TestSingleList05()
 	pList = SingleListRemoveElments(pList, 6);
 
 	SingleListPrint(pList);
+	SingleListDestroy(&pList);
 }
 
 void TestSingleList06()
@@ -139,7 +140,161 @@ void TestSingleList06()
 	SingleListEraseAfter(pList);
 	SingleListEraseAfter(pInsDataList);
 	SingleListPrint(pList);
+	SingleListDestroy(&pList);
+}
 
+void TestSingleList07()
+{
+	SLNode* pList = NULL;
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		SingleListPushBack(&pList, i + 1);
+	}
+	SingleListPrint(pList);
+	pList = SingleListReverseList(pList);
+	SingleListPrint(pList);
+	SingleListDestroy(&pList);
+}
+
+void TestSingleList08()
+{
+	SLNode* pList = NULL;
+	SLNode* pMiddle = NULL;
+	int i = 0;
+	for (i = 0; i < 9; i++)
+	{
+		SingleListPushBack(&pList, i + 1);
+	}
+	SingleListPrint(pList);
+	pMiddle = SingleListMiddleNode(pList);
+	SingleListPrintOneNode(pMiddle);
+	SingleListDestroy(&pList);
+}
+
+void TestSingleList09()
+{
+	int k = 0;
+	SLNode* pList = NULL;
+	SLNode* pKthToTail = NULL;
+	int i = 0;
+	for (i = 0; i < 9; i++)
+	{
+		SingleListPushBack(&pList, i + 1);
+	}
+	SingleListPrint(pList);
+	pKthToTail = SingleListFindKthToTail(pList, k);
+
+	printf("The %dth to tail Node's data is ", k);
+
+	SingleListPrintOneNode(pKthToTail);
+	SingleListDestroy(&pList);
+}
+
+void TestSingleList10()
+{
+	int k = 0;
+	SingleListDataType arr1[3] = { 1,1,4 };
+	SingleListDataType arr2[3] = { 2,6,6 };
+	SLNode* pL1 = NULL, * pL2 = NULL;
+	SLNode* newList = NULL;
+	int i = 0;
+	for (i = 0; i < 3; i++)
+	{
+		SingleListPushBack(&pL1, arr1[i]);
+		SingleListPushBack(&pL2, arr2[i]);
+	}
+	SingleListPushBack(&pL1, 8);
+	SingleListPrint(pL1);
+	SingleListPrint(pL2); 
+
+	newList = SingleListMergeTowList(pL1, pL2);
+	pL1 = pL2 = NULL;
+	SingleListPrint(newList);
+
+	SingleListDestroy(&newList);
+}
+
+void TestSingleList11()
+{
+	int i = 0;
+
+	SingleListDataType fillData[10] = { -1,-7,0,-9,10,-5,12 };
+	SLNode* pList = NULL;
+
+	for (i = 0; i < 10; i++)
+	{
+		SingleListPushBack(&pList, fillData[i]);
+	}
+	SingleListPrint(pList);
+
+	pList = SingleListPartition(pList, 0);
+	SingleListPrint(pList);
+
+	SingleListDestroy(&pList);
+}
+
+void TestSingleList12()
+{
+	int i = 0;
+
+	SingleListDataType palindromArr[3] = { 1,2,1 };
+	SLNode* pList = NULL;
+
+	for (i = 0; i < 3; i++)
+	{
+		SingleListPushBack(&pList, palindromArr[i]);
+	}
+	SingleListPrint(pList);
+
+	printf("%d\n", SingleListCheckPalindrom(pList));
+
+	SingleListPrint(pList);
+
+	SingleListDestroy(&pList);
+}
+
+void TestSingleList13()
+{
+	int i = 0;
+
+	SingleListDataType ArrA[3] = { 1,2,3 };
+	SingleListDataType ArrB[3] = { 2,2,3 };
+	SingleListDataType ArrC[3] = { 4,5,6 };
+	SLNode* pListATail = NULL, * pListBTail = NULL;
+	SLNode* pListA = NULL, * pListB = NULL, * pListC = NULL;
+
+	for (i = 0; i < 3; i++)
+	{
+		SingleListPushBack(&pListA, ArrA[i]);
+		SingleListPushBack(&pListB, ArrB[i]);
+		SingleListPushBack(&pListC, ArrC[i]);
+	}
+	SingleListPrint(pListA);
+	SingleListPrint(pListB);
+	SingleListPrint(pListC);
+	
+	pListATail = SingleListFindTail(pListA);
+	pListBTail = SingleListFindTail(pListB);
+
+	pListATail->next = pListC;
+	pListBTail->next = pListC;
+
+	SingleListPushFront(&pListA, 9);
+	SingleListPushFront(&pListA, 99);
+	SingleListPushFront(&pListA, 999);
+
+	SingleListPrintOneNode(SingleListGetIntersectionNode(pListA, pListB));
+
+	SingleListPrint(pListA);
+	SingleListPrint(pListB);
+
+	pListATail->next = NULL;
+	pListBTail->next = NULL;
+
+	SingleListDestroy(&pListA);
+	SingleListDestroy(&pListB);
+	SingleListDestroy(&pListC);
 }
 
 int main()
@@ -149,6 +304,13 @@ int main()
 	//TestSingleList03();
 	//TestSingleList04();
 	//TestSingleList05();
-	TestSingleList06();
+	//TestSingleList06();
+	//TestSingleList07();
+	//TestSingleList08();
+	//TestSingleList09();
+	//TestSingleList10();
+	//TestSingleList11();
+	//TestSingleList12();
+	TestSingleList13();
 	return 0;
 }
