@@ -24,6 +24,8 @@ SLNode* SingleListFindTail(SLNode* pList);
 SLNode* SingleListPartition(SLNode* pList, int x);
 unsigned char SingleListCheckPalindrom(SLNode* pList);
 SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB);
+unsigned char SingleListHasCycle(SLNode* pList);
+SLNode* SingleListDetectCycle(SLNode* pList);
 
 #pragma region Push
 void SingleListPushBack(SLNode** ppList, SingleListDataType data);

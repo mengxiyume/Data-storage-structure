@@ -359,6 +359,10 @@ SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB)
 	SLNode* longList = NULL, * shortList = NULL;
 	SLNode* pListTailA = headA, * pListTailB = headB;
 
+	//两指针相同则天然相交，也就是完全重合
+	if (headA == headB)
+		return headA;
+
 	while (tailA || tailB)
 	{
 		//其中一个走到头开始计算差距，直到两个都走到头结束
@@ -402,7 +406,8 @@ SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB)
 	{
 		longList = longList->next;
 	}
-
+	if (longList == shortList)
+		return longList;
 	//同步迭代，直到相同
 	while (longList)
 	{
@@ -411,6 +416,115 @@ SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB)
 		longList = longList->next;
 		shortList = shortList->next;
 	}
+}
+
+unsigned char SingleListHasCycle(SLNode* pList)
+{
+	//检测链表是否存在环
+
+	//快慢指针，追击问题
+	//有环则快能追上慢，无环则会走到空
+	assert(pList);
+
+	SLNode* slow = pList, * fast = pList;
+
+	while (fast && fast->next)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+		if (slow == fast)
+			return 1;
+	}
+	return 0;
+}
+
+SLNode* SingleListDetectCycle(SLNode* pList)
+{
+	//检测链表是否有环形结构，如果有，则返回入环的节点
+
+#define SINGLELIST_DETECT_CYCLE_01
+#define SINGLELIST_DETECT_CYCLE_02
+#undef SINGLELIST_DETECT_CYCLE_01
+
+#ifdef SINGLELIST_DETECT_CYCLE_01
+	//快慢指针，追击问题
+	//有环则快能追上慢，无环则会走到空
+
+	//拿到快慢指针相遇节点后
+	//设从链表头到进入循环链表节点的长度为Length
+	//设从Length到快慢指针相遇节点的距离为MeetLength
+	//设链表环的长度为CycleLength
+	//当两个点分别从链表头与快慢链表相遇节点开始迭代，从链表头开始迭代的点迭代至快慢指针相遇点时，从快慢指针相遇点开始迭代的点便迭代到了入环节点
+	//两个Length+MeetLength的长度就是快慢指针相遇之前快指针走过的距离，快指针的速度是慢指针的两倍
+	//	2 * (Length + MeetLength) = Length + N*CycleLthght + MeetLength
+	//从快慢指针相遇点开始走的距离 = 从链表头开始走的距离 = N*CycleLength - MeedLength
+	//	Length + MeetLength = N*CycleLength
+	//	Length = N*CycleLength - MeetLength
+	//	Length = (N - 1)*CycleLength + CycleLength - MeetLength
+	//到这里，就能知道 从相遇点开始迭代的点目前在距离进入入环节点MeetLength长度的位置，只要从链表头的点与这个点一起迭代MeetLength次，就能再次相遇，相遇点既是入环的点
+	//也就是说，这两个点会同时走到进入环节点
+
+	assert(pList);
+
+	SLNode* slow = pList, * fast = pList;
+
+	SLNode* startMeedNode = NULL, * startHeadNode = pList;
+
+	while (fast && fast->next)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+		if (slow == fast)
+			break;
+	}
+	if (!(fast && fast->next))
+		return NULL;
+	//相遇点
+	startMeedNode = fast;
+
+	//两个节点会同时迭代到入环节点，公式证明
+	while (startMeedNode != startHeadNode)
+	{
+		startMeedNode = startMeedNode->next;
+		startHeadNode = startHeadNode->next;
+	}
+	return startMeedNode;
+
+#else 
+#ifdef SINGLELIST_DETECT_CYCLE_02
+
+	//断开环型链表使其成为交接链表
+	
+	assert(pList);
+
+	signed char ifRoundOver = 1;
+	SLNode* slow = pList, * fast = pList;
+	SLNode* newList = NULL;
+	SLNode* detectCycleNode = NULL;
+
+	while (fast && fast->next)
+	{
+		ifRoundOver *= -1;
+		slow = slow->next;
+		fast = fast->next->next;
+		if (slow == fast)
+			break;
+	}
+	if (!(fast && fast->next))
+		return NULL;
+	if (ifRoundOver > 0 && pList->next == fast || ifRoundOver < 0 && pList == fast)
+		//fast走两圈，C的长度为2的倍数时，判断头节点是否与fast重合，如重合将返回头节点，链表在此处入环
+		return fast;
+	newList = fast->next;
+	fast->next = NULL;
+
+	//刚分离出来的相交链表，返回值肯定为真
+	detectCycleNode = SingleListGetIntersectionNode(newList, pList);
+//	assert(detectCycleNode);
+	fast->next = newList;
+	return detectCycleNode;
+#endif
+#endif
 }
 
 #pragma region Push

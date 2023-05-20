@@ -258,9 +258,9 @@ void TestSingleList13()
 {
 	int i = 0;
 
-	SingleListDataType ArrA[3] = { 1,2,3 };
-	SingleListDataType ArrB[3] = { 2,2,3 };
-	SingleListDataType ArrC[3] = { 4,5,6 };
+	SingleListDataType ArrA[3] = { 0,1,2 };
+	SingleListDataType ArrB[3] = { 0,-1,-2 };
+	SingleListDataType ArrC[3] = { 3,4,5 };
 	SLNode* pListATail = NULL, * pListBTail = NULL;
 	SLNode* pListA = NULL, * pListB = NULL, * pListC = NULL;
 
@@ -297,6 +297,36 @@ void TestSingleList13()
 	SingleListDestroy(&pListC);
 }
 
+void TestSingleList14()
+{
+	int i = 0;
+
+	SLNode* pList = NULL;
+	SLNode* pListTail = NULL;
+
+	for (i = 0; i < 9; i++)
+	{
+		SingleListPushBack(&pList, 10-i);
+	}
+
+	pListTail = SingleListFindTail(pList);
+	SingleListPrint(pList);
+	//进环节点在链表的第二个节点
+	pListTail->next = pList->next;
+
+	printf("%d\n", SingleListHasCycle(pList));
+	SingleListPrintOneNode(SingleListDetectCycle(pList));
+
+	//进环节点在链表的第一个节点，也就是链表是一个完整的环
+	pListTail->next = pList;
+	SingleListPrintOneNode(SingleListDetectCycle(pList));
+	pListTail->next = NULL;
+
+	SingleListPrint(pList);
+	SingleListDestroy(&pList);
+
+}
+
 int main()
 {
 	//TestSingleList01();
@@ -311,6 +341,7 @@ int main()
 	//TestSingleList10();
 	//TestSingleList11();
 	//TestSingleList12();
-	TestSingleList13();
+	//TestSingleList13();
+	TestSingleList14();
 	return 0;
 }
