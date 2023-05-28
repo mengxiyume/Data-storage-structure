@@ -12,6 +12,13 @@ typedef struct SingleListNode {
 
 }SLNode;
 
+typedef struct SingleListNode_Random {
+	SingleListDataType value;
+	struct SingleListNode_Random* random;
+	struct SingleListNode_Random* next;
+
+}SLNode_Random;
+
 void SingleListPrint(const SLNode* pList);
 void SingleListPrintOneNode(const SLNode* pNode);
 int SingleListFind(const SLNode* pList, SingleListDataType src);
@@ -26,6 +33,9 @@ unsigned char SingleListCheckPalindrom(SLNode* pList);
 SLNode* SingleListGetIntersectionNode(SLNode* headA, SLNode* headB);
 unsigned char SingleListHasCycle(SLNode* pList);
 SLNode* SingleListDetectCycle(SLNode* pList);
+SLNode_Random* SingleListCopyRandomList(SLNode_Random* pList);
+void SingleListRandomPushBack(SLNode_Random * *ppList, SingleListDataType data);
+void SingleListRandomPrint(const SLNode_Random* pList);
 
 #pragma region Push
 void SingleListPushBack(SLNode** ppList, SingleListDataType data);

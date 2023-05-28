@@ -527,6 +527,177 @@ SLNode* SingleListDetectCycle(SLNode* pList)
 #endif
 }
 
+SLNode_Random* SingleListCopyRandomList(SLNode_Random* pList)
+{
+	//给定一个长度为 N 的链表，每个节点包含一个额外增加的随机指针 random 该指针可以指向链表中的任何节点或空节点
+	//构造这个链表的深拷贝，深拷贝正好由 N 个全新节点组成，其中每个新节点的值都设为对应原节点的值，新节点的next指针和random指针也都指向复制链表中的新节点
+	//并使原链表和复制链表和复制链表中的这些指针能够表示相同的链接状态。复制链表中的指针都不应指向原链表中的节点
+	//例如，如果原链表中由X和Y两个节点，其中X.random->Y，那么在复制链表中对应的两个节点X和Y，同样由X.random->Y。
+	//返回复制链表的头节点
+
+	//检测指针有效性
+	//将复制链表节点插入到原链表节点身后
+	//将复制节点的random变为原节点的random的next
+	//将复制链表的节点从原链表的节点中剔除
+	//返回原节点
+
+	SLNode_Random* pListOld = pList;
+	SLNode_Random* pListNew = NULL;
+	SLNode_Random* pFast = pList->next, * pSlow = pList;
+	SLNode_Random* pTmpNode = NULL;
+	SLNode_Random* tmpNewListNode = NULL;
+	if (!pList)
+		return NULL;
+
+	//创建一个新节点并链接入原链表
+	while (pFast)
+	{
+		pTmpNode = (SLNode_Random*)malloc(sizeof(SLNode_Random));
+		assert(pTmpNode);
+
+		pSlow->next = pTmpNode;
+		pTmpNode->next = pFast;
+		pTmpNode->value = pSlow->value;
+		pTmpNode->random = pSlow->random;
+
+		if (!pListNew)
+		{
+			//头节点获取
+			pListNew = pTmpNode;
+		}
+
+		pSlow = pFast;
+		pFast = pFast->next;
+	}
+	pTmpNode = (SLNode_Random*)malloc(sizeof(SLNode_Random));		//末尾处理
+	assert(pTmpNode);
+	pSlow->next = pTmpNode;
+	pTmpNode->next = pFast;
+	pTmpNode->value = pSlow->value;
+	pTmpNode->random = pSlow->random;
+	if (!pListNew)
+	{
+		//头节点获取
+		pListNew = pTmpNode;
+	}
+
+	//链接新链表的random
+	pFast = pList->next->next;
+	pSlow = pList;
+
+	while (pFast)
+	{
+		tmpNewListNode = pSlow->next;
+		if (tmpNewListNode->random)
+			tmpNewListNode->random = tmpNewListNode->random->next;
+		else
+			tmpNewListNode->random = NULL;
+
+		pSlow = pFast;
+		pFast = pFast->next->next;
+	}
+	tmpNewListNode = pSlow->next;		//末尾处理
+	if (tmpNewListNode->random)
+		tmpNewListNode->random = tmpNewListNode->random->next;
+	else
+		tmpNewListNode->random = NULL;
+
+	//将新链表从旧链表中剔除
+	pFast = pList->next->next;
+	pSlow = pList;
+
+	while (pFast)
+	{
+		tmpNewListNode = pSlow->next;
+		tmpNewListNode = tmpNewListNode->next->next;
+		pSlow->next = pFast;
+
+		pSlow = pFast;
+		pFast = pFast->next->next;
+	}
+	tmpNewListNode = pSlow->next;		//末尾处理
+	pSlow->next = NULL;
+	tmpNewListNode = tmpNewListNode->next;	//这里的next只会是NULL
+
+	return pListNew;
+}
+
+void SingleListRandomPushBack(SLNode_Random** ppList, SingleListDataType data)
+{
+	//检测pList有效性
+	//如无链表则创建链表
+	//来到尾节点
+	//插入新的尾节点
+
+	assert(ppList);
+
+	SLNode_Random* tail = *ppList, * newNode = NULL;
+
+	if (!tail)
+	{
+		if (newNode = (SLNode_Random*)malloc(sizeof(SLNode_Random)))
+		{
+			*ppList = newNode;
+			tail = *ppList;
+
+			newNode->value = data;
+			newNode->next = NULL;
+		}
+		assert(newNode);
+	}
+
+	while (tail->next)
+
+	{
+		tail = tail->next;
+	}
+
+	if (newNode = (SLNode*)malloc(sizeof(SLNode)))
+	{
+		tail->next = newNode;
+
+		newNode->value = data;
+		newNode->random = NULL;
+		newNode->next = NULL;
+	}
+	if (!newNode)
+		assert(newNode);
+}
+
+void SingleListRandomPrint(const SLNode_Random* pList)
+{
+	SLNode_Random* current = pList;
+
+	if (!current)
+	{
+		printf("The List is NULL\n");
+		return;
+	}
+
+	while (current)
+	{
+		printf(" %d ->", current->value);
+
+		current = current->next;
+	}
+	printf("NULL\n");
+	current = pList;
+	while (current)
+	{
+		if (current->random)
+		{
+			printf(" %d   ", current->random->value);
+		}
+		else
+		{
+			printf("NULL ");
+		}
+
+		current = current->next;
+	}
+	printf("\n");
+}
+
 #pragma region Push
 void SingleListPushBack(SLNode** ppList, SingleListDataType data)
 {
@@ -544,6 +715,7 @@ void SingleListPushBack(SLNode** ppList, SingleListDataType data)
 		if (newNode = (SLNode*)malloc(sizeof(SLNode)))
 		{
 			*ppList = newNode;
+			tail = *ppList;
 
 			newNode->data = data;
 			newNode->next = NULL;

@@ -327,6 +327,30 @@ void TestSingleList14()
 
 }
 
+void TestSingleList15()
+{
+	int i = 0;
+
+	SLNode_Random* pList = NULL;
+	SLNode_Random* pNewList = NULL;
+
+	for (i = 0; i < 10; i++)
+	{
+		SingleListRandomPushBack(&pList, i + 1);
+	}
+	assert(pList);
+
+	pList->random = NULL;
+	pList->next->random = pList->next->next->next->next;
+	pList->next->next->random = pList;
+
+	SingleListRandomPrint(pList);
+	printf("\n");
+
+	pNewList = SingleListCopyRandomList(pList);
+	SingleListRandomPrint(pNewList);
+}
+
 int main()
 {
 	//TestSingleList01();
@@ -342,6 +366,7 @@ int main()
 	//TestSingleList11();
 	//TestSingleList12();
 	//TestSingleList13();
-	TestSingleList14();
+	//TestSingleList14();
+	TestSingleList15();
 	return 0;
 }
