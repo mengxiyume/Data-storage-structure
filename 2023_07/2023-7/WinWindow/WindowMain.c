@@ -109,6 +109,11 @@ struct
 };
  
 const int NUMLINES = sizeof(METRICS) / sizeof(METRICS[0]);
+//const int NUMLINES = 10;
+
+static int s_nTextHeight = 20;
+static const int s_c_nNullWhiteHeight = 10;
+static int s_nTextPosition = 0;
 
 void MessageProc_WM_PAINT(HWND hWnd)
 {
@@ -116,13 +121,19 @@ void MessageProc_WM_PAINT(HWND hWnd)
 	PAINTSTRUCT ps = { 0 };
 	TCHAR szText[] = TEXT("Hello Windows API!");
 	TCHAR szBuffer[1024] = TEXT("");
-	HFONT hFont = CreateFont(20, 0, 0, 0, 0, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0, 0, DRAFT_QUALITY, DEFAULT_PITCH, TEXT("./阿里汉仪智能黑体.ttf"));
-	RECT mScreenRect = { 0 };
+	HFONT hFont = CreateFont(s_nTextHeight, 0, 0, 0, 0, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0, 0, DRAFT_QUALITY, DEFAULT_PITCH, TEXT("./阿里汉仪智能黑体.ttf"));
+	RECT mClientRect = { 0 };
 	int i = 0;
 	int* arrCharWidth = NULL;
 	int arrTapStopPositions[] = { 100, 240, 1000 };
 	SIZE mSzTextSize = { 0 };
-	GetClientRect(hWnd, &mScreenRect);
+	int iOffsetTextIndex = (s_nTextPosition - s_c_nNullWhiteHeight) / s_nTextHeight;
+	int nDisplayLineCount = 0;
+	int nOffsetTextPosition = ((s_nTextPosition - s_c_nNullWhiteHeight) > 0 ? (s_nTextPosition - s_c_nNullWhiteHeight) : 0) % s_nTextHeight;
+	nOffsetTextPosition = (s_nTextPosition - s_c_nNullWhiteHeight) < 0 ? -1 : nOffsetTextPosition;
+
+	GetClientRect(hWnd, &mClientRect);
+	nDisplayLineCount = (mClientRect.bottom - mClientRect.top) / s_nTextHeight - 1;	//刷新限制范围 
 
 	hdc = BeginPaint(hWnd, &ps);
 	hFont = SelectObject(hdc, hFont);
@@ -132,30 +143,30 @@ void MessageProc_WM_PAINT(HWND hWnd)
 	SetBkColor(hdc, 0x000000);
 
 	//绘制
-	for (i = 0; i < NUMLINES; i++)
+	for (i = iOffsetTextIndex; i < NUMLINES; i++)
 	{
 		int tmpMode = SetTextAlign(hdc, TA_CENTER | TA_TOP | TA_NOUPDATECP);
+		int y = (i - iOffsetTextIndex) * s_nTextHeight + (nOffsetTextPosition >= 0 ? 0 : s_c_nNullWhiteHeight - s_nTextPosition) - (nOffsetTextPosition >= 0 ? nOffsetTextPosition : 0);
 		SetTextCharacterExtra(hdc, 0);
-		//TextOut(hdc, 30, i * 20, szBuffer, _stprintf_s(szBuffer, _countof(szBuffer), TEXT("%d"), i));
-		//TextOut(hdc, 180, i * 20, szBuffer, _stprintf_s(szBuffer, _countof(szBuffer), TEXT("%d"), GetSystemMetrics(i)));
-		//SetTextCharacterExtra(hdc, 2);
-		//TextOut(hdc, 500, i * 20, METRICS[i].m_pDesc, _tcslen(METRICS[i].m_pDesc));
-		//SetTextCharacterExtra(hdc, 4);
-		//TextOut(hdc, 1000, i * 20, METRICS[i].m_pLabel, _tcslen(METRICS[i].m_pLabel));
 
 		_stprintf_s(szBuffer, _countof(szBuffer), TEXT("%d\t%d\t%s\t%s"), i, GetSystemMetrics(i), METRICS[i].m_pDesc, METRICS[i].m_pLabel);
-		TabbedTextOut(hdc, 30, i * 20, szBuffer, _tcslen(szBuffer), _countof(arrTapStopPositions), arrTapStopPositions, 0);
+		TabbedTextOut(hdc, 30, y
+			, szBuffer, _tcslen(szBuffer), _countof(arrTapStopPositions), arrTapStopPositions, 0);
 
-		SetTextAlign(hdc, tmpMode);	
+		SetTextAlign(hdc, tmpMode);
 		SetTextCharacterExtra(hdc, 0);
+
+		if (i - iOffsetTextIndex > nDisplayLineCount)
+		{
+			break;
+		}
 	}
+	//GetTextExtentPoint(hdc, szText, _tcslen(szText), &mSzTextSize);
+	////GetTabbedTextExtent(hdc, szText, _tcslen(szText), 0, &mSzTextSize);
 
-	GetTextExtentPoint(hdc, szText, _tcslen(szText), &mSzTextSize);
-	//GetTabbedTextExtent(hdc, szText, _tcslen(szText), 0, &mSzTextSize);
-
-	//TextOut(hdc, (GetSystemMetrics(SM_CXSCREEN) - mSzTextSize.cx) / 2, (GetSystemMetrics(SM_CYSCREEN) - mSzTextSize.cy) / 2, szText, _tcslen(szText));
-	//ExtTextOut(hdc, (GetSystemMetrics(SM_CXSCREEN) - mSzTextSize.cx) / 2, (GetSystemMetrics(SM_CYSCREEN) - mSzTextSize.cy) / 2, 0, NULL, szText, _tcslen(szText), NULL);
-	//DrawTextEx(hdc, szText, _tcslen(szText), &mScreenRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK, NULL);
+	////TextOut(hdc, (GetSystemMetrics(SM_CXSCREEN) - mSzTextSize.cx) / 2, (GetSystemMetrics(SM_CYSCREEN) - mSzTextSize.cy) / 2, szText, _tcslen(szText));
+	////ExtTextOut(hdc, (GetSystemMetrics(SM_CXSCREEN) - mSzTextSize.cx) / 2, (GetSystemMetrics(SM_CYSCREEN) - mSzTextSize.cy) / 2, 0, NULL, szText, _tcslen(szText), NULL);
+	////DrawTextEx(hdc, szText, _tcslen(szText), &mScreenRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK, NULL);
 
 	SetBkMode(hdc, OPAQUE);
 	SetTextColor(hdc, 0x000000);
@@ -169,7 +180,7 @@ void MessageProc_WM_PAINT(HWND hWnd)
 void MessageProc_MM_REDISPLAY(HWND hWnd)
 {
 	InvalidateRect(NULL, NULL, TRUE);
-
+	UpdateWindow(hWnd);
 }
 
 void KeyUp_F9(HWND hWnd)
@@ -232,10 +243,50 @@ void MessageProc_WM_MOUSEMOVE(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+void MessageProc_WM_VSCROLL(HWND hWnd, WPARAM wParam)
+{
+	switch (LOWORD(wParam))
+	{
+	case SB_THUMBTRACK:
+		SetScrollPos(hWnd, SB_VERT, HIWORD(wParam), TRUE);
+		s_nTextPosition = HIWORD(wParam);
+		InvalidateRect(hWnd, NULL, TRUE);
+		UpdateWindow(hWnd);
+		break;
+	default:
+		break;
+	}
+
+}
+
+void MessageProc_WM_CREATE(HWND hWnd)
+{
+	SetScrollRange(hWnd, SB_VERT, 0, (NUMLINES - 1) * s_nTextHeight + s_c_nNullWhiteHeight, TRUE);
+	SetScrollPos(hWnd, SB_VERT, 0, TRUE);
+}
+
+void MessageProc_WM_SIZE(HWND hWnd, LPARAM lParam)
+{
+	int width = LOWORD(lParam);
+	int height = HIWORD(lParam);
+	SCROLLINFO si = {0};
+
+	//滚动条重绘
+	si.fMask = SIF_RANGE | SIF_PAGE;
+	si.nMax = (NUMLINES) * s_nTextHeight + s_c_nNullWhiteHeight;
+	si.nMin = 0;
+	si.nPage = height;
+	si.cbSize = sizeof(SCROLLINFO);
+	SetScrollInfo(hWnd, SB_VERT, &si, TRUE);
+}
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+	case WM_CREATE:
+		MessageProc_WM_CREATE(hWnd);
+		break;
 	case WM_DESTROY:
 		PostMessage(hWnd, WM_QUIT, NULL, NULL);		//结束程序
 		//PostQuitMessage(0);
@@ -252,11 +303,16 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		MessageProc_WM_KEYUP(hWnd, wParam);
 		break;
+	case WM_VSCROLL:
+		MessageProc_WM_VSCROLL(hWnd, wParam);
+		break;
+	case WM_SIZE:
+		MessageProc_WM_SIZE(hWnd, lParam);
+		break;
 	default:
-		DefWindowProc(hWnd, uMsg, wParam, lParam);
 		break;
 	}
-
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCmdLine, int nCmdShow)
