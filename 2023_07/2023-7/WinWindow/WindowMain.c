@@ -222,7 +222,7 @@ void MessageProc_WM_MOUSEMOVE(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == MK_LBUTTON)
 	{
-		HDC hdc = GetDC(NULL);
+		HDC hdc = GetDC(hWnd);
 		int nPointX = LOWORD(lParam);
 		int nPointY = HIWORD(lParam);
 		HPEN hPen = CreatePen(PS_NULL, 0, 0xFFFFFF);
@@ -245,12 +245,14 @@ void MessageProc_WM_MOUSEMOVE(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 void MessageProc_WM_VSCROLL(HWND hWnd, WPARAM wParam)
 {
+	RECT mClinetRect = { 0 };
+	GetClientRect(hWnd, &mClinetRect);
 	switch (LOWORD(wParam))
 	{
 	case SB_THUMBTRACK:
 		SetScrollPos(hWnd, SB_VERT, HIWORD(wParam), TRUE);
 		s_nTextPosition = HIWORD(wParam);
-		InvalidateRect(hWnd, NULL, TRUE);
+		ScrollWindow(hWnd, 0, mClinetRect.bottom - mClinetRect.top, NULL, NULL);
 		UpdateWindow(hWnd);
 		break;
 	default:
