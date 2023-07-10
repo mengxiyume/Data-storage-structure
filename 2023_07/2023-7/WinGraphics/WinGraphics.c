@@ -18,6 +18,7 @@ void PaintLine(HWND hWnd)
 	LOGPEN logPen = { 0 };
 	HPEN hPen = NULL;
 
+
 	SetBkMode(hdc, TRANSPARENT);
 
 	logPen.lopnColor = 0x9CC99C;
@@ -65,11 +66,86 @@ void PaintLine(HWND hWnd)
 	EndPaint(hWnd, &ps);
 }
 
+void PaintArc(HWND hWnd)
+{
+	PAINTSTRUCT ps = { 0 };
+	HDC hdc = BeginPaint(hWnd, &ps);
+	HPEN hPen = CreatePen(PS_SOLID, 5, 0x000000);
+
+	hPen = SelectObject(hdc, hPen);
+	SetBkMode(hdc, TRANSPARENT);
+
+	MoveToEx(hdc, 550, 50, NULL);
+	AngleArc(hdc, 300, 300, 250, 0, 270);
+
+
+	DeleteObject(SelectObject(hdc, hPen));
+	hPen = CreatePen(PS_DOT, 1, 0x000000);
+	SelectObject(hdc, hPen);
+
+	MoveToEx(hdc, 300, 300, NULL);
+	LineTo(hdc, 300, 600);
+	MoveToEx(hdc, 300, 300, NULL);
+	LineTo(hdc, 600, 300);
+
+
+	//MoveToEx(hdc, 500, 500, NULL);
+	//ArcTo(hdc, 0, 0, 500, 500, 505, 500, 120, 170);
+	//Arc(hdc, 10, 10, 110, 110, 15, 15, 50, 150);
+
+	DeleteObject(SelectObject(hdc, hPen));
+	EndPaint(hWnd, &ps);
+}
+
+void PaintBezier(HWND hWnd)
+{
+	POINT position = { 100,100 };
+	PAINTSTRUCT ps = { 0 };
+	POINT arrPoint[] = { position.x,position.y, position.x,position.x + 200, position.x + 300,position.y, position.x + 300,position.y + 200 };
+	HDC hdc = BeginPaint(hWnd, &ps);
+	HPEN hPen_1 = CreatePen(PS_DASH, 1, 0x56BB56);
+	HPEN hPen_2 = CreatePen(PS_SOLID, 2, 0x000000);
+
+	SetBkMode(hWnd, TRANSPARENT);
+
+	hPen_2 = SelectObject(hdc, hPen_2);
+	PolyBezier(hdc, arrPoint, _countof(arrPoint));
+	hPen_2 = SelectObject(hdc, hPen_2);
+
+	hPen_1 = SelectObject(hdc, hPen_1);
+	MoveToEx(hdc, arrPoint[1].x, arrPoint[1].y, NULL);
+	LineTo(hdc, arrPoint[0].x, arrPoint[0].y);
+	MoveToEx(hdc, arrPoint[2].x, arrPoint[2].y, NULL);
+	LineTo(hdc, arrPoint[3].x, arrPoint[3].y);
+	hPen_1 = SelectObject(hdc, hPen_1);
+
+	DeleteObject(hPen_1);
+	DeleteObject(hPen_2);
+
+	EndPaint(hWnd, &ps);
+}
+
+void PaintPolyDraw(HWND hWnd)
+{
+	POINT arrPoint[] = { 10,100, 100,10, 150,150, 200,50, 10,100, 100,10 , 150,150, 200,50 };
+	BYTE arrFlag[] = { PT_MOVETO, PT_BEZIERTO, PT_BEZIERTO, PT_BEZIERTO, PT_MOVETO, PT_LINETO, PT_MOVETO, PT_LINETO };
+	PAINTSTRUCT ps = { 0 };
+	HDC hdc = BeginPaint(hWnd, &ps);
+	HPEN hPen = CreatePen(PS_SOLID, 2, 0x000000);
+	SelectObject(hdc, hPen);
+
+	PolyDraw(hdc, arrPoint, arrFlag, _countof(arrPoint));
+
+	DeleteObject(SelectObject(hdc, hPen));
+	EndPaint(hWnd, &ps);
+}
 
 void MessageProc_WM_PAINT(HWND hWnd)
 {
-	PaintLine(hWnd);
-
+	//PaintLine(hWnd);
+	//PaintArc(hWnd);
+	//PaintBezier(hWnd);
+	PaintPolyDraw(hWnd);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam)
@@ -100,7 +176,7 @@ int CALLBACK WinMain(HINSTANCE hIns, HINSTANCE hPrevIns, LPSTR lpCmdLine, int nC
 	wcEx.cbClsExtra = 0;
 	wcEx.cbSize = sizeof(WNDCLASSEX);
 	wcEx.cbWndExtra = 0;
-	wcEx.hbrBackground = CreateSolidBrush(0xCBBCCB);
+	wcEx.hbrBackground = CreateSolidBrush(0xFFFFFF);
 	wcEx.hCursor = NULL;
 	wcEx.hIcon = LoadIcon(NULL, IDI_SHIELD);
 	wcEx.hIconSm = LoadIcon(NULL, IDI_INFORMATION);
