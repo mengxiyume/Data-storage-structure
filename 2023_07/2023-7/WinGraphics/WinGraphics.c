@@ -222,6 +222,38 @@ void PaintExtPen(HDC hdc)
 	}
 }
 
+void Paint_Rgn(HDC hdc)
+{
+	HRGN hClipRgn = CreateEllipticRgn(50, 50, 350, 250);
+	HBRUSH hBrush = SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+
+	SelectClipRgn(hdc, hClipRgn);
+
+	Rectangle(hdc, 0, 0, 1920, 1080);
+
+	SelectObject(hdc, hBrush);
+}
+
+void PaintPath(HDC hdc)
+{
+	BeginPath(hdc);
+	MoveToEx(hdc, 50, 50, NULL);
+	LineTo(hdc, 150, 80);
+	LineTo(hdc, 50, 110);
+
+	//闭合路径
+	CloseFigure(hdc);
+	Rectangle(hdc, 160, 50, 250, 110);
+
+	EndPath(hdc);
+	SelectClipPath(hdc, RGN_COPY);
+
+	SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+
+	StrokePath(hdc);
+	Rectangle(hdc, 0, 0, 1920, 1080);
+}
+
 void MessageProc_WM_PAINT(HWND hWnd)
 {
 	PAINTSTRUCT ps = { 0 };
@@ -255,20 +287,54 @@ void MessageProc_WM_PAINT(HWND hWnd)
 	//
 	//SetMapMode(hdc, MM_TEXT);
 
-	PaintExtPen(hdc);
+	//PaintExtPen(hdc);
+	//Paint_Rgn(hdc);
+	PaintPath(hdc);
 
 	EndPaint(hdc, &ps);
+}
+
+void MessageProc_WM_MOUSEMOVE(WPARAM wParam, LPARAM lParam)
+{
+	HDC hdc = GetDC(NULL);
+	HPEN hPen = SelectObject(hdc, CreatePen(PS_SOLID, 20, 0xFFFFFF));
+
+	int x = LOWORD(lParam), y = HIWORD(lParam);
+	int oldROP2 = SetROP2(hdc, R2_NOT);
+
+	if (wParam == MK_LBUTTON)
+	{
+		MoveToEx(hdc, x, y, NULL);
+		LineTo(hdc, y, x);
+	}
+
+	SetROP2(hdc, oldROP2);
+	DeleteObject(SelectObject(hdc, hPen));
+	ReleaseDC(NULL, hdc);
+}
+
+void MessageProc_WM_CREATE(HWND hWnd)
+{
+	//设置窗口为椭圆形裁切窗口
+	//HRGN hClipWindowRgn = CreateEllipticRgn(50, 50, 350, 250);
+	//SetWindowRgn(hWnd, hClipWindowRgn, TRUE);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam)
 {
 	switch (msgID)
 	{
+	case WM_MOUSEMOVE:
+		MessageProc_WM_MOUSEMOVE(wParam, lParam);
+		break;
 	case WM_DESTROY:
 		PostMessage(hWnd, WM_QUIT, NULL, NULL);
 		break;
 	case WM_PAINT:
 		MessageProc_WM_PAINT(hWnd);
+		break;
+	case WM_CREATE:
+		MessageProc_WM_CREATE(hWnd);
 		break;
 	default:
 		break;
