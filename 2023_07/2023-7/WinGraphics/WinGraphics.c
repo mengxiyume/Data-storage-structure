@@ -191,6 +191,37 @@ void Graphics_PosTrans(HDC hdc)
 	SetMapMode(hdc, MM_TEXT);
 }
 
+void PaintExtPen(HDC hdc)
+{
+	HPEN hPen = NULL;
+	LOGBRUSH logBrush = { 0 };
+	POINT arrPoint[] = { 50,50, 100,200, 150,50 };
+	int i = 0;
+
+	int arrPenStyleEndcap[] = { PS_ENDCAP_ROUND,PS_ENDCAP_SQUARE,PS_ENDCAP_FLAT,PS_ENDCAP_MASK };
+	int arrPenStyleJoin[] = { PS_JOIN_BEVEL,PS_JOIN_MITER,PS_JOIN_ROUND,PS_JOIN_MASK };
+
+	for (i = 0; i < 4; i++)
+	{
+		int j = 0;
+		hPen = ExtCreatePen(PS_GEOMETRIC | PS_SOLID | arrPenStyleEndcap[i] | arrPenStyleJoin[i], 40, &logBrush, 0, NULL);
+		hPen = SelectObject(hdc, hPen);
+
+		Polyline(hdc, arrPoint, _countof(arrPoint));
+		DeleteObject(SelectObject(hdc, hPen));
+		SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+		Polyline(hdc, arrPoint, _countof(arrPoint));
+
+		SelectObject(hdc, GetStockObject(BLACK_PEN));
+		for (j = 0; j < _countof(arrPoint); j++)
+		{
+			arrPoint[j].x += 150;
+		}
+
+	}
+}
+
 void MessageProc_WM_PAINT(HWND hWnd)
 {
 	PAINTSTRUCT ps = { 0 };
@@ -212,16 +243,20 @@ void MessageProc_WM_PAINT(HWND hWnd)
 	//SetMapMode(hdc, MM_LOENGLISH);
 	//DPtoLP(hdc, (LPPOINT)&clientRect, 2);
 	//Ellipse(hdc, clientRect.right / 4, clientRect.bottom / 4, clientRect.right * 3 / 4, clientRect.bottom * 3 / 4);
-	SetMapMode(hdc, MM_ISOTROPIC);
-	SetWindowExtEx(hdc, 500, 500, NULL);
-	GetClientRect(hWnd, &clientRect);
-	SetViewportExtEx(hdc, clientRect.right, -clientRect.bottom, NULL);
 
-	SetViewportOrgEx(hdc, clientRect.right / 2, clientRect.bottom / 2, NULL);
+	//SetMapMode(hdc, MM_ISOTROPIC);
+	//SetWindowExtEx(hdc, 500, 500, NULL);
+	//GetClientRect(hWnd, &clientRect);
+	//SetViewportExtEx(hdc, clientRect.right, -clientRect.bottom, NULL);
+	//
+	//SetViewportOrgEx(hdc, clientRect.right / 2, clientRect.bottom / 2, NULL);
+	//
+	//Ellipse(hdc, -100, 100, 100, -100);
+	//
+	//SetMapMode(hdc, MM_TEXT);
 
-	Ellipse(hdc, -100, 100, 100, -100);
+	PaintExtPen(hdc);
 
-	SetMapMode(hdc, MM_TEXT);
 	EndPaint(hdc, &ps);
 }
 
