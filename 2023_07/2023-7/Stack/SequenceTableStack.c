@@ -92,17 +92,22 @@ int STStackSize(STStack* ps)
 	}
 }
 
+/// <summary>
+///	ÅÐ¶ÏÕ»ÊÇ·ñÎª¿Õ
+/// </summary>
+/// <param name="ps">Õ»</param>
+/// <returns></returns>
 BOOL STStackEmpty(STStack* ps)
 {
 	assert(ps);
 
 	if (ps->top >= 0)
 	{
-		return TRUE;
+		return FALSE;
 	}
 	else
 	{
-		return FALSE;
+		return TRUE;
 	}
 
 }
