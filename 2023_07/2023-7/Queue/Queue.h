@@ -26,5 +26,6 @@ void QueuePush(Queue* pQueue, QDataType data);
 void QueuePop(Queue* pQueue);
 QDataType QueueBack(Queue* pQueue);
 QDataType QueueFront(Queue* pQueue);
+size_t QueueSize(Queue* pQueue);
 bool QueueEmpty(Queue* pQueue);
 void QueueDestroy(Queue* pQueue);

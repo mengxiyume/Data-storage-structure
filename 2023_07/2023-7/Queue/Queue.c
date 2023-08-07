@@ -91,8 +91,28 @@ QDataType QueueBack(Queue* pQueue)
 /// <returns>队头的数据</returns>
 QDataType QueueFront(Queue* pQueue)
 {
-	assert(pQueue && pQueue->head);
+	assert(pQueue);
+	assert(pQueue->head);
 	return pQueue->head->data;
+}
+
+/// <summary>
+/// 获取队列内数据数量
+/// </summary>
+/// <param name="pQueue">队列的地址</param>
+/// <returns>队列内数据的数量</returns>
+size_t QueueSize(Queue* pQueue)
+{
+	assert(pQueue);
+	int size = 0;
+	QueueNode* curNode = pQueue->head;
+	while (curNode)
+	{
+		size++;
+		curNode = curNode->next;
+	}
+	
+	return size;
 }
 
 /// <summary>
