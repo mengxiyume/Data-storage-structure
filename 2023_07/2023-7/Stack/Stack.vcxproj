@@ -139,14 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="LinkListStack.c" />
     <ClCompile Include="SequenceTableStack.c" />
+    <ClCompile Include="StackQueue.c" />
     <ClCompile Include="StackTest.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IncludeLib.h" />
-    <ClInclude Include="LinkListStack.h" />
     <ClInclude Include="SequenceTableStack.h" />
+    <ClInclude Include="StackQueue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

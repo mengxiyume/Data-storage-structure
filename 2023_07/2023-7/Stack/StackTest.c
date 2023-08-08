@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include"LinkListStack.h"
 #include"SequenceTableStack.h"
+#include"StackQueue.h"
 
 void STS_Test01()
 {
@@ -116,10 +116,41 @@ void STS_Test02()
 	
 }
 
+//用栈实现队列
+// 请你使用两个栈实现先入先出队列，队列应该支持一般队列支持的所有操作（push，pop，peek，empty）
+// void StackQueuePush(int x)	//将元素x推到队列尾
+// int StackQueuePop()			//从队列开头移除元素并返回该元素
+// int StackQueuePeek()			//返回队列开头的元素
+// bool StackQueueEmpty()		//判空     
+
+void StackQueueTest01()
+{
+	SQueue* sq = StackQueueCreate();
+	int i = 0;
+
+	for (i = 0; i < 10; i++)
+	{
+		SQueuePush(sq, i);
+		printf("%d ", i);
+	}
+	printf("\n");
+
+	for (i = 0; i < 5; i++)
+	{
+		printf("%d ", SQueuePop(sq));
+	}
+
+	printf("\n%d\n%d\n", SQueueTop(sq), SQueueEmpty(sq));
+	
+	StackQueueDestroy(sq);
+	sq = NULL;
+}
+
 int main()
 {
 	//STS_Test01();
-	STS_Test02();
+	//STS_Test02();
+	StackQueueTest01();
 
 	return 0;
 }

@@ -18,10 +18,10 @@
     <ClCompile Include="StackTest.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="LinkListStack.c">
+    <ClCompile Include="SequenceTableStack.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SequenceTableStack.c">
+    <ClCompile Include="StackQueue.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,10 +29,10 @@
     <ClInclude Include="SequenceTableStack.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="LinkListStack.h">
+    <ClInclude Include="IncludeLib.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IncludeLib.h">
+    <ClInclude Include="StackQueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
