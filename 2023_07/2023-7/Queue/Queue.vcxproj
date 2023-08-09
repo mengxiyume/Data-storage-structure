@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CircularQueue.c" />
     <ClCompile Include="Queue.c" />
     <ClCompile Include="QueueStack.c" />
     <ClCompile Include="QueueTest.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="QueueStack.h" />
   </ItemGroup>
