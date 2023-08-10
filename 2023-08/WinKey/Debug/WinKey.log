@@ -1,0 +1,6 @@
+﻿  WinKey.c
+C:\Users\梦晞\source\repos\2023-08\WinKey\WinKey.c(51,11): warning C4098: “MessageProc_WM_CHAR”:“void”函数返回值
+C:\Users\梦晞\source\repos\2023-08\WinKey\WinKey.c(83,16): warning C4047: “函数”:“HWND”与“int”的间接级别不同
+C:\Users\梦晞\source\repos\2023-08\WinKey\WinKey.c(83,12): warning C4024: “HideCaret”: 形参和实参 1 的类型不同
+C:\Users\梦晞\source\repos\2023-08\WinKey\WinKey.c(139,65): warning C4028: 形参 3 与声明不同
+  WinKey.vcxproj -> C:\Users\梦晞\source\repos\2023-08\Debug\WinKey.exe
